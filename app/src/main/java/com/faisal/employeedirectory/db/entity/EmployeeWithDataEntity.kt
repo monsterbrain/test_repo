@@ -7,5 +7,8 @@ class EmployeeWithDataEntity (
     @Embedded val employee: EmployeeEntity,
 
     @Relation(parentColumn = "uid", entityColumn = "employee_id")
-    val address: AddressEntity
+    val address: AddressEntity,
+
+    @Relation(parentColumn = "uid", entityColumn = "employee_id")
+    val company: CompanyEntity?
 )

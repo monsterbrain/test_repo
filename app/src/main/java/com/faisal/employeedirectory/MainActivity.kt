@@ -11,6 +11,8 @@ import retrofit2.Callback
 import retrofit2.Response
 import android.net.ConnectivityManager
 import android.widget.Toast
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.afollestad.materialdialogs.MaterialDialog
 import com.faisal.employeedirectory.data.DataProvider
 import com.faisal.employeedirectory.db.DatabaseClient
@@ -41,7 +43,13 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun showEmployeeListFromDB() {
+        val employeeList = DatabaseClient.instance().getEmployeeDao().getAllDataWithDetails()
 
+        val employeeListAdapter = EmployeeAdapter(employeeList)
+
+        val recyclerView = findViewById<RecyclerView>(R.id.recyclerView)
+        recyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+        recyclerView.adapter = employeeListAdapter
     }
 
     /**
@@ -136,6 +144,8 @@ class MainActivity : AppCompatActivity() {
 
         if (!isDBWriteErrorOccurred) {
             setIsDataStoredInDB(true)
+
+            showEmployeeListFromDB()
         }
     }
 
