@@ -5,6 +5,7 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.MenuItem
 import com.faisal.employeedirectory.R
 import com.faisal.employeedirectory.databinding.ActivityProfileDetailsBinding
 import com.faisal.employeedirectory.db.entity.EmployeeWithDataEntity
@@ -18,6 +19,9 @@ class ProfileDetailsActivity : AppCompatActivity() {
 
         binding = ActivityProfileDetailsBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        supportActionBar?.title = "Details"
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         val employeeWithDataEntity =
             intent.getSerializableExtra(PARAM_EMPLOYEE_DATA) as? EmployeeWithDataEntity ?: null
@@ -44,6 +48,16 @@ class ProfileDetailsActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.getItemId()) {
+            android.R.id.home -> {
+                onBackPressed()
+                return true
+            }
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     companion object {

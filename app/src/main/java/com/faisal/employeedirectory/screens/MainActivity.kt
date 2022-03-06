@@ -5,7 +5,9 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.view.View
 import android.widget.EditText
+import android.widget.TextView
 import com.faisal.employeedirectory.models.EmployeeModel
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -25,9 +27,13 @@ class MainActivity : AppCompatActivity() {
     private var employeeListFromDb: List<EmployeeWithDataEntity>? = null
     private lateinit var employeeListAdapter: EmployeeAdapter
 
+    private var textViewLoading: TextView? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        textViewLoading = findViewById(R.id.textViewLoading)
     }
 
     override fun onStart() {
@@ -45,6 +51,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun showEmployeeListFromDB() {
+        textViewLoading?.visibility = View.INVISIBLE
+
         employeeListFromDb = DatabaseClient.instance().getEmployeeDao().getAllDataWithDetails()
 
         employeeListAdapter = EmployeeAdapter(employeeListFromDb!!) {
