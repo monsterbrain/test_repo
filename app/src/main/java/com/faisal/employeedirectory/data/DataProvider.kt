@@ -3,9 +3,7 @@ package com.faisal.employeedirectory.data
 import android.content.Context
 import android.util.Log
 import android.widget.Toast
-import com.afollestad.materialdialogs.MaterialDialog
-import com.faisal.employeedirectory.MainActivity
-import com.faisal.employeedirectory.R
+import com.faisal.employeedirectory.screens.MainActivity
 import com.faisal.employeedirectory.api.ApiInterface
 import com.faisal.employeedirectory.models.EmployeeModel
 import retrofit2.Call

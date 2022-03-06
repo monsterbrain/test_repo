@@ -1,19 +1,14 @@
-package com.faisal.employeedirectory
+package com.faisal.employeedirectory.screens
 
 import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
-import com.faisal.employeedirectory.api.ApiInterface
 import com.faisal.employeedirectory.models.EmployeeModel
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import android.net.ConnectivityManager
-import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.afollestad.materialdialogs.MaterialDialog
+import com.faisal.employeedirectory.EmployeeAdapter
+import com.faisal.employeedirectory.R
 import com.faisal.employeedirectory.data.DataProvider
 import com.faisal.employeedirectory.db.DatabaseClient
 import com.faisal.employeedirectory.db.entity.AddressEntity
