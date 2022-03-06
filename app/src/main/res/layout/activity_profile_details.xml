@@ -75,8 +75,9 @@
         android:text="Address"
         android:textSize="16sp"
         android:textStyle="bold"
-        app:layout_constraintTop_toBottomOf="@+id/textViewWebsite"
-        tools:layout_editor_absoluteX="174dp" />
+        app:layout_constraintEnd_toEndOf="@+id/textViewWebsite"
+        app:layout_constraintStart_toStartOf="@+id/textViewWebsite"
+        app:layout_constraintTop_toBottomOf="@+id/textViewWebsite" />
 
     <TextView
         android:id="@+id/textViewAddress"

@@ -10,7 +10,7 @@ import com.faisal.employeedirectory.db.entity.EmployeeWithDataEntity
 import com.squareup.picasso.Picasso
 
 class EmployeeAdapter(
-    private val employeeList: List<EmployeeWithDataEntity>,
+    private var employeeList: List<EmployeeWithDataEntity>,
     private val onItemClick: (item: EmployeeWithDataEntity) -> Unit
 ) :
     RecyclerView.Adapter<EmployeeAdapter.ViewHolder>() {
@@ -43,6 +43,11 @@ class EmployeeAdapter(
     // return the number of the items in the list
     override fun getItemCount(): Int {
         return employeeList.size
+    }
+
+    fun updateList(filteredList: List<EmployeeWithDataEntity>) {
+        employeeList = filteredList
+        notifyDataSetChanged()
     }
 
     // Holds the views for adding it to image and text

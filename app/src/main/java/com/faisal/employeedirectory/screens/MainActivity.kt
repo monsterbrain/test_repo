@@ -3,6 +3,9 @@ package com.faisal.employeedirectory.screens
 import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
+import android.widget.EditText
 import com.faisal.employeedirectory.models.EmployeeModel
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -18,6 +21,9 @@ import com.faisal.employeedirectory.db.entity.EmployeeWithDataEntity
 import com.faisal.employeedirectory.utils.NetworkUtil.isOnline
 
 class MainActivity : AppCompatActivity() {
+
+    private var employeeListFromDb: List<EmployeeWithDataEntity>? = null
+    private lateinit var employeeListAdapter: EmployeeAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,19 +45,51 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun showEmployeeListFromDB() {
-        val employeeList = DatabaseClient.instance().getEmployeeDao().getAllDataWithDetails()
+        employeeListFromDb = DatabaseClient.instance().getEmployeeDao().getAllDataWithDetails()
 
-        val employeeListAdapter = EmployeeAdapter(employeeList) {
+        employeeListAdapter = EmployeeAdapter(employeeListFromDb!!) {
             showDetailsScreen(it)
         }
 
         val recyclerView = findViewById<RecyclerView>(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
         recyclerView.adapter = employeeListAdapter
+
+        initSearch()
+    }
+
+    private fun initSearch() {
+        val editTextSearch = findViewById<EditText>(R.id.editTextSearch)
+        editTextSearch.addTextChangedListener(object: TextWatcher {
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+                filterList(s.toString())
+            }
+        })
+    }
+
+    private fun filterList(searchKey: String) {
+        val filteredList = mutableListOf<EmployeeWithDataEntity>()
+
+        employeeListFromDb?.let { list ->
+            list.forEach {
+                if (it.employee.name!!.contains(searchKey, true) || it.employee.email!!.contains(searchKey, true)) {
+                    filteredList.add(it)
+                }
+            }
+        }
+
+        employeeListAdapter?.updateList(filteredList)
     }
 
     private fun showDetailsScreen(employeeWithDataEntity: EmployeeWithDataEntity) {
-
+        ProfileDetailsActivity.start(this, employeeWithDataEntity)
     }
 
     /**

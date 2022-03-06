@@ -4,6 +4,7 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
+import java.io.Serializable
 
 @Entity(
     foreignKeys = [ForeignKey(
@@ -20,4 +21,4 @@ class AddressEntity(
     @ColumnInfo(name = "zipcode") var zipcode: String? = null,
     // @ColumnInfo(name = "geo") var geo: GeoLocation? = null, todo
     @ColumnInfo(name = "employee_id") var employeeId: Int? = null
-)
+): Serializable

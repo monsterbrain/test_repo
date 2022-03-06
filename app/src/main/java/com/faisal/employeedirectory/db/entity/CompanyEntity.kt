@@ -5,6 +5,7 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 import com.faisal.employeedirectory.models.GeoLocation
+import java.io.Serializable
 
 @Entity(
     foreignKeys = [ForeignKey(
@@ -19,4 +20,4 @@ class CompanyEntity(
     @ColumnInfo(name = "catchPhrase") var catchPhrase: String? = null,
     @ColumnInfo(name = "bs") var bs: String? = null,
     @ColumnInfo(name = "employee_id") var employeeId: Int? = null
-)
+): Serializable
