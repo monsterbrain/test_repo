@@ -5,6 +5,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.faisal.employeedirectory.db.entity.AddressEntity
+import com.faisal.employeedirectory.db.entity.CompanyEntity
 import com.faisal.employeedirectory.db.entity.EmployeeEntity
 import com.faisal.employeedirectory.db.entity.EmployeeWithDataEntity
 
@@ -21,4 +22,7 @@ interface EmployeeDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertAddress(addressEntity: AddressEntity): Long?
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertCompany(companyEntity: CompanyEntity): Long?
 }

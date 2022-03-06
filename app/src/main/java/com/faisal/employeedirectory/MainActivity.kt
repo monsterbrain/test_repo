@@ -1,5 +1,6 @@
 package com.faisal.employeedirectory
 
+import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -11,8 +12,10 @@ import retrofit2.Response
 import android.net.ConnectivityManager
 import android.widget.Toast
 import com.afollestad.materialdialogs.MaterialDialog
+import com.faisal.employeedirectory.data.DataProvider
 import com.faisal.employeedirectory.db.DatabaseClient
 import com.faisal.employeedirectory.db.entity.AddressEntity
+import com.faisal.employeedirectory.db.entity.CompanyEntity
 import com.faisal.employeedirectory.db.entity.EmployeeEntity
 import com.faisal.employeedirectory.utils.NetworkUtil.isOnline
 
@@ -26,9 +29,19 @@ class MainActivity : AppCompatActivity() {
     override fun onStart() {
         super.onStart()
 
-        checkIfOnline {
-            fetchEmployeeData(true)
+        if (isDataStoredInDB()) {
+            // show details from DB
+            showEmployeeListFromDB()
+        } else {
+            checkIfOnline {
+                fetchEmployeeData()
+            }
         }
+
+    }
+
+    private fun showEmployeeListFromDB() {
+
     }
 
     /**
@@ -50,79 +63,96 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun fetchEmployeeData(fromServer: Boolean) {
-        val employeeApiCall = ApiInterface.create().getEmployeeList()
-        employeeApiCall.enqueue(object : Callback<List<EmployeeModel>>{
-            override fun onResponse(
-                call: Call<List<EmployeeModel>>,
-                response: Response<List<EmployeeModel>>
-            ) {
-                Log.i(TAG, "onResponse: ${response.body()}")
-                val employeeList = response.body()
-                employeeList?.let {
-                    saveToDatabase(it)
-                } ?: kotlin.run {
-                    Toast.makeText(
-                        this@MainActivity,
-                        "Empty Employee list returned or Server Error.",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-            }
-
-            override fun onFailure(call: Call<List<EmployeeModel>>, t: Throwable) {
-                runOnUiThread {
-                    val errorMessage = getString(R.string.api_response_failure) + "[${t.message}]"
-                    MaterialDialog(this@MainActivity).show {
-                        title(R.string.title_error)
-                        message(null, errorMessage)
-                        positiveButton(R.string.action_retry) {
-                            it.dismiss()
-                            fetchEmployeeData(fromServer)
-                        }
+    private fun fetchEmployeeData() {
+        val dataProvider = DataProvider()
+        dataProvider.getEmployeeDataFromApi(this) { data, errMessage ->
+            if (data != null) {
+                saveToDatabase(data)
+            } else {
+                val errorMessage = getString(R.string.api_response_failure) + "[$errMessage]"
+                MaterialDialog(this@MainActivity).show {
+                    title(R.string.title_error)
+                    message(null, errorMessage)
+                    positiveButton(R.string.action_retry) {
+                        it.dismiss()
+                        fetchEmployeeData()
                     }
                 }
             }
-
-        })
+        }
     }
 
     private fun saveToDatabase(employeeList: List<EmployeeModel>) {
-        employeeList.forEach {
-            val employeeDao = DatabaseClient.instance().getEmployeeDao()
+        var isDBWriteErrorOccurred = false
+        try {
+            employeeList.forEach {
+                val employeeDao = DatabaseClient.instance().getEmployeeDao()
 
-            val employeeEntity = EmployeeEntity(
-                0,
-                it.id,
-                it.name,
-                it.username,
-                it.email,
-                it.profileImage,
-                it.phone,
-                it.website
-            )
-            employeeDao.insertEmployee(employeeEntity)
-
-            it.address?.let { address ->
-                val addressEntity = AddressEntity(
+                val employeeEntity = EmployeeEntity(
                     0,
-                    address.street,
-                    address.suite,
-                    address.city,
-                    address.zipcode,
-                    it.id
+                    it.id,
+                    it.name,
+                    it.username,
+                    it.email,
+                    it.profileImage,
+                    it.phone,
+                    it.website
+                )
+                val employeeUid = employeeDao.insertEmployee(employeeEntity)
+
+                it.address?.let { address ->
+                    val addressEntity = AddressEntity(
+                        0,
+                        address.street,
+                        address.suite,
+                        address.city,
+                        address.zipcode,
+                        employeeUid?.toInt()
+                        )
+                    employeeDao.insertAddress(addressEntity)
+                }
+
+                it.company?.let { company ->
+                    val companyEntity = CompanyEntity(
+                        0,
+                        company.name,
+                        company.catchPhrase,
+                        company.bs,
+                        employeeUid?.toInt()
                     )
-                employeeDao.insertAddress(addressEntity)
-            } ?: kotlin.run {
-                // todo
+                    employeeDao.insertCompany(companyEntity)
+                }
             }
+        } catch (e: Exception) {
+            MaterialDialog(this@MainActivity).show {
+                title(R.string.title_error)
+                message(null, "Failed to add to database error: ${e.message}")
+                positiveButton(R.string.action_ok) {
+                    it.dismiss()
+                }
+            }
+            isDBWriteErrorOccurred = true
         }
 
-        DatabaseClient.instance().getEmployeeDao().getAll()
+        if (!isDBWriteErrorOccurred) {
+            setIsDataStoredInDB(true)
+        }
+    }
+
+    private fun isDataStoredInDB(): Boolean {
+        val sharedPref = getPreferences(Context.MODE_PRIVATE)
+        return sharedPref.getBoolean(KEY_STORED_IN_DB, false)
+    }
+
+    private fun setIsDataStoredInDB(isStoredInDB: Boolean) {
+        val sharedPref = getPreferences(Context.MODE_PRIVATE)
+        sharedPref.edit().putBoolean(KEY_STORED_IN_DB, isStoredInDB).apply()
     }
 
 
     companion object {
         const val TAG = "MainActivity"
+
+        private const val KEY_STORED_IN_DB = "stored_in_db"
     }
 }

@@ -4,6 +4,7 @@
     <string name="title_error">Error</string>
     <string name="is_offline_error">You are not connected to Internet. Enable and try again please.</string>
     <string name="action_retry">Retry</string>
+    <string name="action_ok">OK</string>
 
     <string name="api_response_failure">Failed to fetch employee data.</string>
 </resources>
