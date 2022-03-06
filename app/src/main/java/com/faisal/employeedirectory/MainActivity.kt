@@ -9,7 +9,11 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import android.net.ConnectivityManager
+import android.widget.Toast
 import com.afollestad.materialdialogs.MaterialDialog
+import com.faisal.employeedirectory.db.DatabaseClient
+import com.faisal.employeedirectory.db.entity.AddressEntity
+import com.faisal.employeedirectory.db.entity.EmployeeEntity
 import com.faisal.employeedirectory.utils.NetworkUtil.isOnline
 
 class MainActivity : AppCompatActivity() {
@@ -54,6 +58,16 @@ class MainActivity : AppCompatActivity() {
                 response: Response<List<EmployeeModel>>
             ) {
                 Log.i(TAG, "onResponse: ${response.body()}")
+                val employeeList = response.body()
+                employeeList?.let {
+                    saveToDatabase(it)
+                } ?: kotlin.run {
+                    Toast.makeText(
+                        this@MainActivity,
+                        "Empty Employee list returned or Server Error.",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
             }
 
             override fun onFailure(call: Call<List<EmployeeModel>>, t: Throwable) {
@@ -71,6 +85,40 @@ class MainActivity : AppCompatActivity() {
             }
 
         })
+    }
+
+    private fun saveToDatabase(employeeList: List<EmployeeModel>) {
+        employeeList.forEach {
+            val employeeDao = DatabaseClient.instance().getEmployeeDao()
+
+            val employeeEntity = EmployeeEntity(
+                0,
+                it.id,
+                it.name,
+                it.username,
+                it.email,
+                it.profileImage,
+                it.phone,
+                it.website
+            )
+            employeeDao.insertEmployee(employeeEntity)
+
+            it.address?.let { address ->
+                val addressEntity = AddressEntity(
+                    0,
+                    address.street,
+                    address.suite,
+                    address.city,
+                    address.zipcode,
+                    it.id
+                    )
+                employeeDao.insertAddress(addressEntity)
+            } ?: kotlin.run {
+                // todo
+            }
+        }
+
+        DatabaseClient.instance().getEmployeeDao().getAll()
     }
 
 
