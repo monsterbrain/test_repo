@@ -1,11 +1,13 @@
 package com.faisal.employeedirectory.models
 
+import com.google.gson.annotations.SerializedName
+
 data class EmployeeModel(
     var id: Int? = null,
     var name: String? = null,
     var username: String? = null,
     var email: String? = null,
-    var profileImage: String? = null,
+    @SerializedName("profile_image") var profileImage: String? = null,
     var address: Address? = Address(),
     var phone: String? = null,
     var website: String? = null,

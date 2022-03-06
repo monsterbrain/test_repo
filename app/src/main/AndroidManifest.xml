@@ -4,12 +4,9 @@
     package="com.faisal.employeedirectory">
 
     <uses-permission android:name="android.permission.INTERNET" />
-
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
-    <!--Note: Uses cleartext traffic enabled to allow the mock api calls
-    to pass through-->
     <application
         android:name=".MainApplication"
         android:allowBackup="true"
@@ -20,6 +17,9 @@
         android:theme="@style/Theme.EmployeeDirectory"
         android:usesCleartextTraffic="true"
         tools:targetApi="m">
+        <activity
+            android:name=".screens.ProfileDetailsActivity"
+            android:exported="false" />
         <activity
             android:name=".screens.MainActivity"
             android:exported="true">

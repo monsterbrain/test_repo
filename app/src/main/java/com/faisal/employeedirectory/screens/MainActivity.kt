@@ -14,6 +14,7 @@ import com.faisal.employeedirectory.db.DatabaseClient
 import com.faisal.employeedirectory.db.entity.AddressEntity
 import com.faisal.employeedirectory.db.entity.CompanyEntity
 import com.faisal.employeedirectory.db.entity.EmployeeEntity
+import com.faisal.employeedirectory.db.entity.EmployeeWithDataEntity
 import com.faisal.employeedirectory.utils.NetworkUtil.isOnline
 
 class MainActivity : AppCompatActivity() {
@@ -40,11 +41,17 @@ class MainActivity : AppCompatActivity() {
     private fun showEmployeeListFromDB() {
         val employeeList = DatabaseClient.instance().getEmployeeDao().getAllDataWithDetails()
 
-        val employeeListAdapter = EmployeeAdapter(employeeList)
+        val employeeListAdapter = EmployeeAdapter(employeeList) {
+            showDetailsScreen(it)
+        }
 
         val recyclerView = findViewById<RecyclerView>(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
         recyclerView.adapter = employeeListAdapter
+    }
+
+    private fun showDetailsScreen(employeeWithDataEntity: EmployeeWithDataEntity) {
+
     }
 
     /**

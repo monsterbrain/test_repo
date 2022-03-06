@@ -7,6 +7,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.faisal.employeedirectory.db.entity.EmployeeWithDataEntity
+import com.squareup.picasso.Picasso
 
 class EmployeeAdapter(
     private val employeeList: List<EmployeeWithDataEntity>,
@@ -27,8 +28,8 @@ class EmployeeAdapter(
 
         val employeeModel = employeeList[position]
 
-        // sets the image to the imageview from our itemHolder class todo
-        // holder.profileImageView.setImageResource(ItemsViewModel.image)
+        // sets the image to the imageview from our itemHolder class
+        Picasso.get().load(employeeModel.employee.profileImage).placeholder(R.drawable.ic_placeholder).into(holder.profileImageView)
 
         // sets the text to the textview from our itemHolder class
         holder.textViewName.text = employeeModel.employee.name
